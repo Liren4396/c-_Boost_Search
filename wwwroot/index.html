@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"> </script>
+    <title>boost 搜索引擎</title>
+    <style>
+        /*去掉网页中所有的默认内外边距， html盒子模型*/
+        * {
+            /*设置外边距*/
+            margin: 0;
+            /*设置内边距*/
+            padding: 0;
+        }
+        /*将body内容和网页100%呈现*/
+        html,
+        body {
+            height: 100%;
+        }
+        /*类选择器, container*/
+        .container {
+            /*设置div的宽度*/
+            width: 800px;
+            /*设置上下左右边距达到居中对齐*/
+            margin: 0px auto;
+            /*设置外边距的上边距 保持元素和网页的上部距离*/
+            margin-top: 15px;
+        }
+        /*复合选择器, 选中container 下的 search*/
+        .container .search {
+            /*宽度与父标签保持一致*/
+            width: 100%;
+            /*高度设置为52像素点*/
+            height: 52px;
+        }
+        /*选中input标签*/
+        /*input没有考虑边框*/
+        .container .search input {
+            /*设置left浮动*/
+            float: left;
+            width: 600px;
+            height: 50px;
+            /*设置边框属性 样式 颜色*/
+            border: 1px solid black;
+            /*去掉input输入框的右边框*/
+            border-right: none;
+
+            padding-left: 10px;
+            /*设置字体内部颜色 样式*/
+            color: #ccc;
+            font-size: 15px;
+        }
+        .container .search button {
+            float: left;
+            width: 150px;
+            height: 52px;
+            background-color: #4e6ef2;
+            color: #FFF;
+            /*设置字体的大小*/
+            font-size: 20px;
+            font-family: Georgia, 'Times New Roman', times, serif;
+        }
+        .container .result {
+            width: 100%;
+        }
+        .container .result .item {
+            margin-top: 15px;
+        }
+        .container .result .item a {
+            /* 设置为 块级元素 单独占一行*/
+            display: block;
+            /*a 标签的下划线去掉*/
+            text-decoration: none;
+            font-size: 20px;
+            /*设置字体颜色*/
+            color: #4e6ef2;
+        }
+        .container .result .item a:hover {
+            text-decoration: underline;
+        }
+        .container .result .item p {
+            /*display: block;*/
+            margin-top: 5px;
+            font-size: 16px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        .container .result .item i {
+            display: block;
+            font-style: normal;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="search">
+            <input type="text" value="输入关键字...">
+            <button onclick="Search()">搜索一下</button>
+        </div>
+        <!-- dynamically content -->
+
+        <div class="result">
+        <!--     <div class="item">
+                <a href="#">这是标题</a>
+                <p>这是摘要这是摘要</p>
+                <i>www.baidu.com</i>
+
+            </div>
+            <div class="item">
+                <a href="#">这是标题</a>
+                <p>这是摘要这是摘要</p>
+                <i>www.baidu.com</i>
+
+            </div>
+            <div class="item">
+                <a href="#">这是标题</a>
+                <p>这是摘要这是摘要</p>
+                <i>www.baidu.com</i>
+
+            </div>
+            <div class="item">
+                <a href="#">这是标题</a>
+                <p>这是摘要这是摘要</p>
+                <i>www.baidu.com</i>
+
+            </div>
+            <div class="item">
+                <a href="#">这是标题</a>
+                <p>这是摘要这是摘要</p>
+                <i>www.baidu.com</i>
+
+            </div>-->
+        </div> 
+    </div>
+    <script>
+    function Search(){
+        // $ is jquey's name
+        let query = $(".container .search input").val();
+        console.log("query = " + query)
+
+        // 2. ajax, combine frontend and backend function
+        
+        $.ajax({
+            type: "GET",
+            url: "/s?word=" + query,
+            success: function(data) {
+                console.log(data);
+                BuildHtml(data);
+            }
+        });
+    }
+    function BuildHtml(data) {
+        let result_lable = $(".container .result");
+        result_lable.empty();
+
+        for (let elem of data) {
+            //console.log(elem.title);
+            let a_label = $("<a>", {
+                text: elem.title,
+                href: elem.url,
+                target: "_blank"
+            });
+            let p_lable = $("<p>", {
+                text: elem.desc
+            });
+            let i_lable = $("<i>", {
+                text: elem.url
+            });
+            let div_lable = $("<div>", {
+                class: "item"
+            })
+
+            a_label.appendTo(div_lable);
+            p_lable.appendTo(div_lable);
+            i_lable.appendTo(div_lable);
+            div_lable.appendTo(result_lable);
+        }
+    }
+    </script>
+</body>
+</html>
