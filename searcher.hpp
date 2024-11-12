@@ -2,8 +2,9 @@
 #include "index.hpp"
 #include "util.hpp"
 #include <algorithm>
-#include <json/json.h>
 #include "log.hpp"
+#include "saved_data.pb.h"
+
 namespace ns_searcher {
     struct InvertedElemPrint {
         uint64_t doc_id;
@@ -22,15 +23,15 @@ namespace ns_searcher {
                 // 1. get or create index obj
                 // 2. establish index from index obj
                 index = ns_index::Index::GetInstance();
-                LOG(NORMAL, "get instance successfully...");
+                LOG(LOG_NORMAL, "get instance successfully...");
                 //std::cout << "get instance successfully..." << std::endl;
                 index->BuildIndex(input);
                 //std::cout << "establish forward and backward index successfully..." << std::endl;
-                LOG(NORMAL, "establish forward and backward index successfully...");
+                LOG(LOG_NORMAL, "establish forward and backward index successfully...");
             }
             // query: search key word
             // json_string: result to user's web
-            void Search(const std::string &query, std::string *json_string) {
+            void Search(const std::string &query, Saved_data::Saved_datas *pb_ret) {
                 // 1. split word by following searcher's request
                 std::vector<std::string> words;
                 ns_util::JiebaUtil::CutString(query, &words);
@@ -67,6 +68,7 @@ namespace ns_searcher {
                     [](const InvertedElemPrint &e1, const InvertedElemPrint &e2){
                         return e1.weight > e2.weight;
                     });
+                /*
                 // 4. establish json --- jsoncpp --- using jsoncpp series and unseries
                 Json::Value root;
                 for (auto &item : inverted_list_all) {
@@ -86,7 +88,23 @@ namespace ns_searcher {
                     root.append(elem);
                 }
                 Json::StyledWriter writer;
-                *json_string = writer.write(root);
+                *json_string = writer.write(root);*/
+                Saved_data::Saved_datas datas;
+                for (auto &item : inverted_list_all) {
+                    ns_index::DocInfo * doc = index->GetForwardIndex(item.doc_id);
+                    if (nullptr == doc) {
+                        continue;
+                    }
+                    Saved_data::Saved_data data;
+                    data.set_title(doc->title);
+                    data.set_desc(GetDesc(doc->content, item.words[0]));
+                    data.set_url(doc->url);
+                    data.set_id(item.doc_id);
+                    data.set_weight(item.weight);
+
+                    datas.add_data()->CopyFrom(data);
+                }
+                *pb_ret = datas;
             }
             std::string GetDesc(const std::string &html_content, const std::string &word) {
                 // find the first place html_content appear,

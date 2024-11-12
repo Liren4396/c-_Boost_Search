@@ -1,5 +1,7 @@
 # Boost_Searcher
-**CppReference 搜索引擎**
+**CppReference 搜索引擎**  
+
+V1.0.1: 不再使用Jsoncpp作为序列化方案，改为使用Protobuf
 
 **一、项目背景**  
 站内搜索，数据更垂直，数据量更小。

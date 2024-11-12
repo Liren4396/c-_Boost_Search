@@ -84,7 +84,7 @@ namespace ns_index {
                     count++;
                     if (count % 50 == 0) {
                         //std::cout << "currently already established doc: " << count << std::endl; 
-                        LOG(NORMAL, "currently already established doc: "+std::to_string(count));
+                        LOG(LOG_NORMAL, "currently already established doc: "+std::to_string(count));
                     }
                 }
                 return true;
@@ -147,14 +147,13 @@ namespace ns_index {
                     boost::to_lower(s);
                     word_map[s].content_cnt++;
                 }
-#define X 10
-#define Y 1
-
+                const int kTitleWeight = 10;
+                const int kContentWeight = 1;
                 for (auto &word_pair : word_map) {
                     InvertedElem item;
                     item.doc_id = doc.doc_id;
                     item.word = word_pair.first;
-                    item.weight = X*word_pair.second.title_cnt + Y*word_pair.second.content_cnt;
+                    item.weight = kTitleWeight*word_pair.second.title_cnt + kContentWeight*word_pair.second.content_cnt;
                     InvertedLIst_t &inverted_list = inverted_index[word_pair.first];
                     inverted_list.push_back(item);
                 }

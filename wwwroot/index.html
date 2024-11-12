@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/protobufjs@6.11.2/dist/protobuf.min.js"></script>
+
     <title>boost 搜索引擎</title>
     <style>
         /*去掉网页中所有的默认内外边距， html盒子模型*/
@@ -137,49 +139,74 @@
         </div> 
     </div>
     <script>
-    function Search(){
-        // $ is jquey's name
-        let query = $(".container .search input").val();
-        console.log("query = " + query)
-
-        // 2. ajax, combine frontend and backend function
-        
-        $.ajax({
-            type: "GET",
-            url: "/s?word=" + query,
-            success: function(data) {
-                console.log(data);
-                BuildHtml(data);
-            }
-        });
-    }
-    function BuildHtml(data) {
-        let result_lable = $(".container .result");
-        result_lable.empty();
-
-        for (let elem of data) {
-            //console.log(elem.title);
-            let a_label = $("<a>", {
-                text: elem.title,
-                href: elem.url,
-                target: "_blank"
+        function renderData(savedDataList) {
+            const container = document.querySelector(".container .result");
+            // 先清空现有的结果
+            container.innerHTML = '';
+    
+            savedDataList.forEach(savedData => {
+                const div = document.createElement("div");
+                div.classList.add("item");
+    
+                const a = document.createElement("a");
+                a.href = savedData.url;
+                a.textContent = savedData.title;
+                div.appendChild(a);
+    
+                const p = document.createElement("p");
+                p.textContent = savedData.desc;
+                div.appendChild(p);
+    
+                const i = document.createElement("i");
+                i.textContent = savedData.url;
+                div.appendChild(i);
+    
+                container.appendChild(div);
             });
-            let p_lable = $("<p>", {
-                text: elem.desc
-            });
-            let i_lable = $("<i>", {
-                text: elem.url
-            });
-            let div_lable = $("<div>", {
-                class: "item"
-            })
-
-            a_label.appendTo(div_lable);
-            p_lable.appendTo(div_lable);
-            i_lable.appendTo(div_lable);
-            div_lable.appendTo(result_lable);
         }
-    }
+    
+        function Search() {
+            // 获取输入框中的搜索关键字
+            let query = $(".container .search input").val();
+            // console.log("query = " + query);
+    
+            fetch('http://127.0.0.1:8081/s?word=' + encodeURIComponent(query))  // 使用 encodeURIComponent 以确保查询词的正确编码
+            .then(response => response.arrayBuffer())
+            .then(data => {
+                // 1. 通过 protobuf.js 加载定义
+                protobuf.load("../saved_data.proto", function(err, root) {
+                    if (err) {
+                        console.error("Failed to load proto file", err);
+                        return;
+                    }
+    
+                    // 2. 获取消息类型
+                    const SavedDatas = root.lookupType("Saved_data.Saved_datas");
+                    const SavedData = root.lookupType("Saved_data.Saved_data");
+    
+                    // 3. 解析二进制数据
+                    const message = SavedDatas.decode(new Uint8Array(data));
+    
+                    // 4. 提取数据
+                    const savedDataList = message.data;
+    
+                    // 5. 按照 url, title, desc 分类
+                    /*
+                    savedDataList.forEach(savedData => {
+                        console.log("URL:", savedData.url);
+                        console.log("Title:", savedData.title);
+                        console.log("Description:", savedData.desc);
+                    });
+                    */
+                    // 6. 渲染数据
+                    renderData(savedDataList);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+        }
     </script>
+    
 </body>
 </html>

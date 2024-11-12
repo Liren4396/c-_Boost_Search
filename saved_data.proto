@@ -1,0 +1,17 @@
+// 首行语法指定行
+syntax = "proto3";
+package Saved_data;
+
+import "google/protobuf/any.proto";
+
+message Saved_data {
+    string title = 1;
+    string desc = 2;
+    string url = 3;
+    uint64 id = 4;
+    uint64 weight = 5;
+}
+
+message Saved_datas {
+    repeated Saved_data data = 1;
+}
