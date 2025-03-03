@@ -5,6 +5,11 @@
 ## 🌟 版本更新
 **V1.0.1**: 不再使用 Jsoncpp 作为序列化方案，改为使用 Protobuf。
 
+**注意添加库路径**
+```bash
+export LD_LIBRARY_PATH=/usr/local/protobuf/lib:$LD_LIBRARY_PATH
+```
+
 ---
 
 ## 📌 项目背景
@@ -14,7 +19,7 @@
 
 ## 🛠 技术栈 & 项目环境
 - **语言**：C/C++（C++11）
-- **库**：STL、Boost、jsonCpp、cppjieba
+- **库**：STL、Boost、Protobuf、cppjieba
 - **环境**：Ubuntu 22.04、g++/Makefile、VSCode
 
 ---
@@ -52,7 +57,7 @@
 ### 🌐 服务器构建（`http_server.cc`）
 🔗 **使用 `httplib` 处理 HTTP 请求**
 - **处理请求**：解析查询参数，调用 `Searcher` 进行搜索。
-- **返回 JSON**：使用 `JsonCpp` 组装搜索结果。
+- **返回 JSON**：使用 `Protobuf` 组装搜索结果。
 
 ---
 
@@ -67,7 +72,18 @@
 ---
 
 ## 📂 重要文件路径
-📌 **前端页面**：`wwwroot/index.html`
+- 📌 **原始 HTML 数据**：`data/input/html`
+- 📌 **筛选后的数据**：`data/raw_html`
+- 📌 **前端页面**：`wwwroot/index.html`
+
+---
+
+## 🚀 运行步骤
+```bash
+cd c-_Boost_Search
+./http_server
+```
+然后打开浏览器访问：`http://127.0.0.1:8081`
 
 ---
 
@@ -75,6 +91,6 @@
 🚀 欢迎贡献代码、提交 Issue 或建议优化！
 
 📜 本项目遵循 **MIT 许可证**。
-CppReference 的基本内容：data/input/html  
-数据筛选完的路径：data/raw_html
+
+
 
