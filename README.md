@@ -18,9 +18,9 @@ export LD_LIBRARY_PATH=/usr/local/protobuf/lib:$LD_LIBRARY_PATH
 ---
 
 ## 🛠 技术栈 & 项目环境
-- **语言**：C/C++（C++11）
-- **库**：STL、Boost、Protobuf、cppjieba
-- **环境**：Ubuntu 22.04、g++/Makefile、VSCode
+- **语言**：C/C++（C++11）.
+- **库**：STL、Boost、Protobuf、cppjieba.
+- **环境**：Ubuntu 22.04、g++/Makefile、VSCode.
 
 ---
 
